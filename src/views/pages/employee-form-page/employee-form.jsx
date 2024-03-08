@@ -16,16 +16,16 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import EmployeeTable from "../../commponents/dashbord-components/Orders";
+import { useEffect } from "react";
+
 const EmployeeForm = () => {
-  // Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
   const top100Films = [
     { label: "front end developer" },
     { label: "back end developer" },
     { label: "Full stack developer" },
     { label: "react js developer" },
   ];
-  // --------------------------------------------------------------------
+
   const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
     clipPath: "inset(50%)",
@@ -38,7 +38,6 @@ const EmployeeForm = () => {
     width: 1,
   });
 
-  // -------------------------------------------------------------------
   const [phoneNumber, setPhoneNumber] = useState("");
   const [valid, setValid] = useState(true);
   const [employeeData, setEmployeeData] = useState({
@@ -55,6 +54,13 @@ const EmployeeForm = () => {
     resume: null,
   });
 
+  const [storedEmployeeData, setStoredEmployeeData] = useState({});
+
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem("employeeData")) || {};
+    setStoredEmployeeData(storedData);
+  }, []);
+
   const handleChange = (value) => {
     setPhoneNumber(value);
     setValid(validatePhoneNumber(value));
@@ -62,7 +68,6 @@ const EmployeeForm = () => {
 
   const validatePhoneNumber = (phoneNumber) => {
     const phoneNumberPattern = /^\+?[1-9]\d{1,14}$/;
-
     return phoneNumberPattern.test(phoneNumber);
   };
 
@@ -80,7 +85,6 @@ const EmployeeForm = () => {
       dob: date,
     }));
   };
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setEmployeeData({ ...employeeData, resume: file });
@@ -92,49 +96,46 @@ const EmployeeForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Prepare employee data to save
+  
     const dataToSave = {
       ...employeeData,
       phoneNumber: phoneNumber,
-      dob: dayjs(employeeData.dob).format("YYYY-MM-DD"), // Format date properly
+      dob: dayjs(employeeData.dob).format("YYYY-MM-DD"),
     };
-
-    // Include the position property in the data to save
+  
     if (employeeData.position) {
       dataToSave.position = employeeData.position;
     }
-
-    // Retrieve existing data from local storage
+  
     const existingData = JSON.parse(localStorage.getItem("employeeData")) || {};
-
-    // Merge new data with existing data
+  
     const newData = {
       ...existingData,
-      [dayjs().format("YYYY-MM-DDTHH:mm:ss")]: dataToSave, // Use current timestamp as key
+      [dayjs().format("YYYY-MM-DDTHH:mm:ss")]: dataToSave,
     };
-
-    // Save merged data to local storage
+  
     localStorage.setItem("employeeData", JSON.stringify(newData));
-
-    // Reset form fields
+  
+    // Update the storedEmployeeData state here
+    setStoredEmployeeData(newData);
+  
     setEmployeeData({
       name: "",
       email: "",
-      position: "", // Reset position field
+      position: "",
       gender: "",
       address: "",
       city: "",
       phoneNumber: "",
       state: "",
       zip: "",
-      dob: "", // Reset date of birth field
+      dob: "",
       resume: null,
     });
-
-    // Reset phone number field
+  
     setPhoneNumber("");
   };
+  
 
   return (
     <>
@@ -328,18 +329,12 @@ const EmployeeForm = () => {
                   </label>{" "}
                 </div>
 
-                <Button
-                  component="label"
-                  role={undefined}
-                  variant="contained"
-                  tabIndex={-1}
-                  startIcon={<CloudUploadIcon />}
-                  onChange={handleFileChange}
+                <input
+                  type="file"
+                  id="resume"
                   accept=".pdf,.doc,.docx"
-                >
-                  Upload file
-                  <VisuallyHiddenInput type="file" />
-                </Button>
+                  onChange={handleFileChange}
+                />
               </div>
               <div className="mt-10 col-span-full sm:col-span-2">
                 <Button size="large" variant="contained" type="submit">
@@ -350,7 +345,81 @@ const EmployeeForm = () => {
           </fieldset>
         </form>
 
-        <EmployeeTable employeeData={employeeData} />
+        <div className="mt-10">
+          <h2 className="mb-4 text-xl font-bold">Employee Data</h2>
+          <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                  Position
+                </th>
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                  Gender
+                </th>
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                  Address
+                </th>
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                  City
+                </th>
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                  Phone Number
+                </th>
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                  ZIP
+                </th>
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                  Date of Birth
+                </th>
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase border border-gray-200">
+                  Resume
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {Object.values(storedEmployeeData).map((employee, index) => (
+                <tr key={index}>
+                  <td className="px-6 py-4 border border-gray-200 whitespace-nowrap">
+                    {employee.name}
+                  </td>
+                  <td className="px-6 py-4 border border-gray-200 whitespace-nowrap">
+                    {employee.email}
+                  </td>
+                  <td className="px-6 py-4 border border-gray-200 whitespace-nowrap">
+                    {employee.position}
+                  </td>
+                  <td className="px-6 py-4 border border-gray-200 whitespace-nowrap">
+                    {employee.gender}
+                  </td>
+                  <td className="px-6 py-4 border border-gray-200 whitespace-nowrap">
+                    {employee.address}
+                  </td>
+                  <td className="px-6 py-4 border border-gray-200 whitespace-nowrap">
+                    {employee.city}
+                  </td>
+                  <td className="px-6 py-4 border border-gray-200 whitespace-nowrap">
+                    {employee.phoneNumber}
+                  </td>
+                  <td className="px-6 py-4 border border-gray-200 whitespace-nowrap">
+                    {employee.zip}
+                  </td>
+                  <td className="px-6 py-4 border border-gray-200 whitespace-nowrap">
+                    {employee.dob}
+                  </td>
+                  <td className="px-6 py-4 border border-gray-200 whitespace-nowrap">
+                    {employee.resume ? employee.resume.name : ""}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </>
   );
