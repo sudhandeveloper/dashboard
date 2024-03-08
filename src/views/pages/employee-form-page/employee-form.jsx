@@ -5,7 +5,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import styled from "@emotion/styled";
+// import styled from "@emotion/styled";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import dayjs from "dayjs";
@@ -15,7 +15,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 
 import Button from "@mui/material/Button";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+// import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useEffect } from "react";
 
 const EmployeeForm = () => {
@@ -26,17 +26,17 @@ const EmployeeForm = () => {
     { label: "react js developer" },
   ];
 
-  const VisuallyHiddenInput = styled("input")({
-    clip: "rect(0 0 0 0)",
-    clipPath: "inset(50%)",
-    height: 1,
-    overflow: "hidden",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    whiteSpace: "nowrap",
-    width: 1,
-  });
+  // const VisuallyHiddenInput = styled("input")({
+  //   clip: "rect(0 0 0 0)",
+  //   clipPath: "inset(50%)",
+  //   height: 1,
+  //   overflow: "hidden",
+  //   position: "absolute",
+  //   bottom: 0,
+  //   left: 0,
+  //   whiteSpace: "nowrap",
+  //   width: 1,
+  // });
 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [valid, setValid] = useState(true);
@@ -96,29 +96,29 @@ const EmployeeForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     const dataToSave = {
       ...employeeData,
       phoneNumber: phoneNumber,
       dob: dayjs(employeeData.dob).format("YYYY-MM-DD"),
     };
-  
+
     if (employeeData.position) {
       dataToSave.position = employeeData.position;
     }
-  
+
     const existingData = JSON.parse(localStorage.getItem("employeeData")) || {};
-  
+
     const newData = {
       ...existingData,
       [dayjs().format("YYYY-MM-DDTHH:mm:ss")]: dataToSave,
     };
-  
+
     localStorage.setItem("employeeData", JSON.stringify(newData));
-  
+
     // Update the storedEmployeeData state here
     setStoredEmployeeData(newData);
-  
+
     setEmployeeData({
       name: "",
       email: "",
@@ -132,10 +132,9 @@ const EmployeeForm = () => {
       dob: "",
       resume: null,
     });
-  
+
     setPhoneNumber("");
   };
-  
 
   return (
     <>
